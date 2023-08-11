@@ -1,0 +1,155 @@
+name: google_map
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.0.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  change_app_package_name: ^1.1.0
+  cupertino_icons: ^1.0.5
+#  firebase_core: ^2.15.0
+#  cloud_firestore: ^4.8.3
+#  firebase_messaging: ^14.6.5
+#  firebase_auth: ^4.7.1
+#  firebase_storage: ^11.2.5
+#  google_sign_in: ^6.1.4
+#  flutter_facebook_auth: ^6.0.0
+  flutter_svg: ^2.0.6
+  flutter_screenutil: ^5.8.4
+  easy_localization: ^3.0.2
+  shared_preferences: ^2.1.2
+  zoom_tap_animation: ^1.1.0
+  http: ^1.1.0
+  dio: ^5.3.2
+  cached_network_image: ^3.2.3
+  provider: ^6.0.5
+  lottie: ^2.5.0
+  image_picker: ^1.0.1
+  like_button: ^2.0.5
+  curved_navigation_bar: ^1.0.3
+  flutter_local_notifications: ^15.1.0+1
+  carousel_slider: ^4.2.1
+  photo_view: ^0.14.0
+  google_maps_flutter: ^2.4.0
+  location: ^5.0.2+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/svg/
+    - assets/translations/
+    - assets/lotties/
+
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Black.ttf
+        - asset: assets/fonts/Poppins/Poppins-BlackItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins/Poppins-BoldItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-ExtraBold.ttf
+        - asset: assets/fonts/Poppins/Poppins-ExtraBoldItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-ExtraLight.ttf
+        - asset: assets/fonts/Poppins/Poppins-ExtraLightItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Italic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Light.ttf
+        - asset: assets/fonts/Poppins/Poppins-LightItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
+        - asset: assets/fonts/Poppins/Poppins-MediumItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
+        - asset: assets/fonts/Poppins/Poppins-SemiBoldItalic.ttf
+        - asset: assets/fonts/Poppins/Poppins-Thin.ttf
+        - asset: assets/fonts/Poppins/Poppins-ThinItalic.ttf
+
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat/Montserrat-Black.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-BlackItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Bold.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-BoldItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraBold.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraBoldItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraLight.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ExtraLightItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Italic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Light.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-LightItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Medium.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-MediumItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-SemiBold.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-SemiBoldItalic.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-Thin.ttf
+        - asset: assets/fonts/Montserrat/Montserrat-ThinItalic.ttf
+
+    - family: Raleway
+      fonts:
+        - asset: assets/fonts/Raleway/Raleway-Black.ttf
+        - asset: assets/fonts/Raleway/Raleway-BlackItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-Bold.ttf
+        - asset: assets/fonts/Raleway/Raleway-BoldItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-ExtraBold.ttf
+        - asset: assets/fonts/Raleway/Raleway-ExtraBoldItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-ExtraLight.ttf
+        - asset: assets/fonts/Raleway/Raleway-ExtraLightItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-Italic.ttf
+        - asset: assets/fonts/Raleway/Raleway-Light.ttf
+        - asset: assets/fonts/Raleway/Raleway-LightItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-Medium.ttf
+        - asset: assets/fonts/Raleway/Raleway-MediumItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-Regular.ttf
+        - asset: assets/fonts/Raleway/Raleway-SemiBold.ttf
+        - asset: assets/fonts/Raleway/Raleway-SemiBoldItalic.ttf
+        - asset: assets/fonts/Raleway/Raleway-Thin.ttf
+        - asset: assets/fonts/Raleway/Raleway-ThinItalic.ttf
+
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans/DMSans-BoldItalic.ttf
+        - asset: assets/fonts/DMSans/DMSans-Italic.ttf
+        - asset: assets/fonts/DMSans/DMSans-Bold.ttf
+        - asset: assets/fonts/DMSans/DMSans-Medium.ttf
+        - asset: assets/fonts/DMSans/DMSans-MediumItalic.ttf
+        - asset: assets/fonts/DMSans/DMSans-Regular.ttf
+
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/Inter/Inter-Black.ttf
+        - asset: assets/fonts/Inter/Inter-Bold.ttf
+        - asset: assets/fonts/Inter/Inter-ExtraBold.ttf
+        - asset: assets/fonts/Inter/Inter-ExtraLight.ttf
+        - asset: assets/fonts/Inter/Inter-Light.ttf
+        - asset: assets/fonts/Inter/Inter-Medium.ttf
+        - asset: assets/fonts/Inter/Inter-Regular.ttf
+        - asset: assets/fonts/Inter/Inter-SemiBold.ttf
+        - asset: assets/fonts/Inter/Inter-Thin.ttf
+
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/Lato/Lato-Black.ttf
+        - asset: assets/fonts/Lato/Lato-BlackItalic.ttf
+        - asset: assets/fonts/Lato/Lato-Bold.ttf
+        - asset: assets/fonts/Lato/Lato-BoldItalic.ttf
+        - asset: assets/fonts/Lato/Lato-Italic.ttf
+        - asset: assets/fonts/Lato/Lato-Light.ttf
+        - asset: assets/fonts/Lato/Lato-LightItalic.ttf
+        - asset: assets/fonts/Lato/Lato-Regular.ttf
+        - asset: assets/fonts/Lato/Lato-Thin.ttf
+        - asset: assets/fonts/Lato/Lato-ThinItalic.ttf
+
+    - family: MetalMania
+      fonts:
+        - asset: assets/fonts/MetalMania/MetalMania-Regular.ttf
