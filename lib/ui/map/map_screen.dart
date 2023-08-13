@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_map/ui/map/widgets/address_kind_selector.dart';
+import 'package:google_map/ui/map/widgets/address_lang_selector.dart';
+import 'package:google_map/ui/map/widgets/current%20_address_show.dart';
 import 'package:google_map/utils/icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +31,8 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void initState() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
     super.initState();
     Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     _selectedLocation = widget.latLong;
@@ -38,31 +42,38 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final AddressProvider addressProvider =
-        Provider.of<AddressProvider>(context);
+    Provider.of<AddressProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Colors.black),
-        toolbarHeight: 40,
-        title: SvgPicture.asset(AppImages.google,height: 45.h,),
+        systemOverlayStyle:
+        const SystemUiOverlayStyle(statusBarColor: Colors.black),
+        toolbarHeight: 45,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              AppImages.google,
+              height: 40.h,
+            ),
+            SvgPicture.asset(
+              AppImages.locationMe,
+              height: 30.h,
+            ),
+          ],
+        ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, RouteNames.addressScreen);
-              },
-              icon: const Icon(Icons.list_alt))
-        ],
       ),
       body: Stack(
         children: [
           GoogleMap(
-            padding: EdgeInsets.only(bottom: 25.r),
+            padding: EdgeInsets.only(bottom: 20.r),
             mapType: _selectedMapType,
             mapToolbarEnabled: true,
             myLocationEnabled: true,
-            myLocationButtonEnabled: true,
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
             onMapCreated: (controller) {
               _mapController = controller;
             },
@@ -82,6 +93,31 @@ class _MapScreenState extends State<MapScreen> {
               ),
             },
           ),
+          Align(
+            alignment: Alignment.topCenter,
+            child: CurrentAddressField(),
+          ),
+          Positioned(
+            right: 10,
+            top: 20,
+            child: ZoomTapAnimation(
+              onTap: () {
+                Navigator.pushNamed(context, RouteNames.addressScreen);
+              },
+              child: Container(
+                height: 33.h,
+                width: 33.w,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.r),
+                    color: Colors.black.withOpacity(0.8)),
+                child: Center(
+                    child: Icon(Icons.list_alt_outlined,
+                        color: addressProvider.savedAddressCondition
+                            ? Colors.green
+                            : Colors.white)),
+              ),
+            ),
+          ),
           Positioned(
             right: 10,
             top: 60,
@@ -99,18 +135,18 @@ class _MapScreenState extends State<MapScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50.r),
                     color: Colors.black.withOpacity(0.8)),
-                child: const Center(
-                  child: Icon(
-                    CupertinoIcons.compass_fill,
-                    color: Colors.white,
-                  ),
+                child: Center(
+                  child: Icon(CupertinoIcons.location_solid,
+                      color: _selectedLocation == widget.latLong
+                          ? Colors.white
+                          : Colors.red),
                 ),
               ),
             ),
           ),
           Positioned(
             right: 3,
-            top: 100,
+            top: 95,
             child: PopupMenuButton<MapType>(
               color: Colors.black.withOpacity(0.8),
               icon: Container(
@@ -119,7 +155,14 @@ class _MapScreenState extends State<MapScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50.r),
                     color: Colors.black.withOpacity(0.8)),
-                child: const Icon(Icons.map_rounded, color: Colors.white),
+                child: Icon(Icons.map_rounded,
+                    color: _selectedMapType == MapType.normal
+                        ? Colors.white
+                        : _selectedMapType == MapType.hybrid
+                        ? Colors.green
+                        : _selectedMapType == MapType.terrain
+                        ? Colors.blue
+                        : Colors.white),
               ),
               onSelected: (MapType result) {
                 setState(() {
@@ -132,42 +175,166 @@ class _MapScreenState extends State<MapScreen> {
                     setState(() {});
                   },
                   value: MapType.normal,
-                  child: Text('Normal',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Poppins",
-                          fontSize: 15.sp)),
+                  child: Row(
+                    children: [
+                      Text('Normal',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "Poppins",
+                              fontSize: 15.sp)),
+                      const Spacer(),
+                      Image.asset(AppImages.normal, width: 50.w, height: 40.h),
+                    ],
+                  ),
                 ),
                 PopupMenuItem<MapType>(
                   onTap: () {
                     setState(() {});
                   },
                   value: MapType.hybrid,
-                  child: Text('Hybrid',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Poppins",
-                          fontSize: 15.sp)),
+                  child: Row(
+                    children: [
+                      Text('Hybrid',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "Poppins",
+                              fontSize: 15.sp)),
+                      const Spacer(),
+                      Image.asset(AppImages.hybrid, width: 50.w, height: 40.h),
+                    ],
+                  ),
                 ),
                 PopupMenuItem<MapType>(
                   onTap: () {
                     setState(() {});
                   },
                   value: MapType.terrain,
-                  child: Text('Terrain',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Poppins",
-                          fontSize: 15.sp)),
+                  child: Row(
+                    children: [
+                      Text('Terrain',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: "Poppins",
+                              fontSize: 15.sp)),
+                      const Spacer(),
+                      Image.asset(AppImages.terrain, width: 50.w, height: 40.h),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
+          // Positioned(
+          //   right: 3,
+          //   top: 135,
+          //   child: PopupMenuButton<MapType>(
+          //     color: Colors.black.withOpacity(0.8),
+          //     icon: Container(
+          //       height: 50.h,
+          //       width: 50.w,
+          //       decoration: BoxDecoration(
+          //           borderRadius: BorderRadius.circular(50.r),
+          //           color: Colors.black.withOpacity(0.8)),
+          //       child: const Icon(Icons.language, color: Colors.white),
+          //     ),
+          //     onSelected: (MapType result) {
+          //       setState(() {});
+          //     },
+          //     itemBuilder: (BuildContext context) => <PopupMenuEntry<MapType>>[
+          //       PopupMenuItem<MapType>(
+          //         onTap: () {
+          //           setState(() {});
+          //         },
+          //         value: MapType.normal,
+          //         child: Row(
+          //           children: [
+          //             Text("UZB",
+          //                 style: TextStyle(
+          //                     color: Colors.white,
+          //                     fontFamily: "Poppins",
+          //                     fontSize: 15.sp)),
+          //             const Spacer(),
+          //             SvgPicture.asset(
+          //               AppImages.uzb,
+          //               width: 30.w,
+          //               height: 30,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       PopupMenuItem<MapType>(
+          //         onTap: () {
+          //           setState(() {});
+          //         },
+          //         value: MapType.hybrid,
+          //         child: Row(
+          //           children: [
+          //             Text("RUS",
+          //                 style: TextStyle(
+          //                     color: Colors.white,
+          //                     fontFamily: "Poppins",
+          //                     fontSize: 15.sp)),
+          //             const Spacer(),
+          //             SvgPicture.asset(
+          //               AppImages.rus,
+          //               width: 30.w,
+          //               height: 30,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       PopupMenuItem<MapType>(
+          //         onTap: () {
+          //           setState(() {});
+          //         },
+          //         value: MapType.terrain,
+          //         child: Row(
+          //           children: [
+          //             Text("ENG",
+          //                 style: TextStyle(
+          //                     color: Colors.white,
+          //                     fontFamily: "Poppins",
+          //                     fontSize: 15.sp)),
+          //             const Spacer(),
+          //             SvgPicture.asset(
+          //               AppImages.usa,
+          //               width: 30.w,
+          //               height: 30,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //       PopupMenuItem<MapType>(
+          //         onTap: () {
+          //           setState(() {});
+          //         },
+          //         value: MapType.terrain,
+          //         child: Row(
+          //           children: [
+          //             Text("TURK",
+          //                 style: TextStyle(
+          //                     color: Colors.white,
+          //                     fontFamily: "Poppins",
+          //                     fontSize: 15.sp)),
+          //             const Spacer(),
+          //             SvgPicture.asset(
+          //               AppImages.turk,
+          //               width: 30.w,
+          //               height: 30,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          const Positioned(top: 135, right: 2, child: AddressKindSelector()),
+          const Positioned(top: 175, right: 2, child: AddressLangSelector()),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.black.withOpacity(0.8),
         onPressed: () async {
           Provider.of<AddressProvider>(context, listen: false).addAddress(
             Address(
@@ -179,13 +346,12 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           );
-
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               backgroundColor: Colors.black,
               content: Text(
                 'Location successfully saved.',
-                style: TextStyle(fontFamily: "Poppins",fontSize: 15.sp),
+                style: TextStyle(fontFamily: "Poppins", fontSize: 15.sp),
               ),
               duration: const Duration(seconds: 1),
             ),

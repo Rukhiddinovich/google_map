@@ -11,6 +11,10 @@ class AppImages {
   static const String google = "assets/svg/google.svg";
   static const String googleMaps = "assets/svg/google_maps.svg";
   static const String locationMe = "assets/svg/location_me.svg";
+  static const String uzb = "assets/svg/uzb.svg";
+  static const String rus = "assets/svg/rus.svg";
+  static const String usa = "assets/svg/usa.svg";
+  static const String turk = "assets/svg/turk.svg";
 
   // lottie
   static const String clean = "assets/lotties/clean.json";
