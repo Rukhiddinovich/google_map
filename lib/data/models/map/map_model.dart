@@ -9,6 +9,11 @@ class Address {
   final int id;
   final String name;
   final Location location;
+  final String address;
 
-  Address({required this.id, required this.name, required this.location});
+  Address(
+      {required this.address,
+      required this.id,
+      required this.name,
+      required this.location});
 }

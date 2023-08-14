@@ -2,22 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_map/data/network/api_service.dart';
 import 'package:google_map/provider/address_call_provider.dart';
-import 'package:google_map/provider/api_provider.dart';
+import 'package:google_map/provider/address_provider.dart';
+import 'package:google_map/provider/user_location_provider.dart';
 import 'package:google_map/ui/app_routes.dart';
-import 'package:google_map/ui/location/get_location_screen.dart';
+import 'package:google_map/ui/splash/splash_screen.dart';
 import 'package:google_map/utils/text_theme.dart';
 import 'package:provider/provider.dart';
-import 'data/network/api_repository.dart';
 
 Future<void> main() async {
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (context) => AddressProvider()),
-      ChangeNotifierProvider(
-          create: (context) => AddressCallProvider(apiService: ApiService())),
-    ],
-    child: const MyApp(),
-  ));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AddressProvider()),
+        ChangeNotifierProvider(create: (context) => UserLocationsProvider()),
+        ChangeNotifierProvider(
+            create: (context) => AddressCallProvider(apiService: ApiService())),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -36,7 +39,7 @@ class MyApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: ThemeMode.dark,
             onGenerateRoute: AppRoutes.generateRoute,
-            home: LocationAccess());
+            home: const SplashScreen());
       },
     );
   }

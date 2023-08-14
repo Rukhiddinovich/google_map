@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_map/data/models/map/map_model.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-
-import '../../provider/api_provider.dart';
+import '../../provider/address_provider.dart';
 import '../../utils/icons.dart';
 
 class AddressListScreen extends StatelessWidget {
@@ -14,7 +14,7 @@ class AddressListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final addressProvider = Provider.of<AddressProvider>(context);
-    final addresses = addressProvider.addresses;
+    List<Address> userAddress = addressProvider.addresses;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -43,17 +43,18 @@ class AddressListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: addresses.isEmpty
+      body: userAddress.isEmpty
           ? Center(child: Lottie.asset(AppImages.location))
           : ListView.builder(
-              itemCount: addresses.length,
+              itemCount: userAddress.length,
               itemBuilder: (context, index) {
-                final address = addresses[index];
+                final address = userAddress[index];
                 return ListTile(
+                  onTap: () {},
                   title: Row(
                     children: [
                       Text(
-                        address.name,
+                        address.address,
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 20.sp,
@@ -62,7 +63,7 @@ class AddressListScreen extends StatelessWidget {
                     ],
                   ),
                   subtitle: Text(
-                    'Lat: ${address.location.latitude}, Long: ${address.location.longitude}',
+                    address.name,
                     style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 15.sp,

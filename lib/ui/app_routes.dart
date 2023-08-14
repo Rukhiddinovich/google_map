@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_map/ui/address/address_screen.dart';
-import 'package:google_map/ui/location/get_location_screen.dart';
 import 'package:google_map/ui/map/map_screen.dart';
+import 'package:google_map/ui/splash/splash_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RouteNames {
   static const String mapScreen = "/map";
   static const String addressScreen = "/addressScreen";
-  static const String locationAccess = "/locationAccess";
+  static const String splashScreen = "/splashScreen";
 }
 
 class AppRoutes {
@@ -19,9 +19,9 @@ class AppRoutes {
       case RouteNames.addressScreen:
         return MaterialPageRoute(
             builder: (context) => const AddressListScreen());
-      case RouteNames.locationAccess:
+      case RouteNames.splashScreen:
         return MaterialPageRoute(
-            builder: (context) => const LocationAccess());
+            builder: (context) => const SplashScreen());
       default:
         return MaterialPageRoute(
           builder: (context) => const Scaffold(

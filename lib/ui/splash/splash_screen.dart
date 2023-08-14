@@ -8,14 +8,14 @@ import 'package:lottie/lottie.dart';
 import '../../utils/icons.dart';
 import '../map/map_screen.dart';
 
-class LocationAccess extends StatefulWidget {
-  const LocationAccess({super.key});
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
 
   @override
-  _LocationAccessState createState() => _LocationAccessState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _LocationAccessState extends State<LocationAccess> {
+class _SplashScreenState extends State<SplashScreen> {
   LatLong? _latLong;
 
   Future<void> _getLocation() async {

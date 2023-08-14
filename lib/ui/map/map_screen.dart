@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_map/provider/address_call_provider.dart';
 import 'package:google_map/ui/map/widgets/address_kind_selector.dart';
 import 'package:google_map/ui/map/widgets/address_lang_selector.dart';
 import 'package:google_map/ui/map/widgets/current%20_address_show.dart';
@@ -11,7 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 import '../../data/models/map/map_model.dart';
-import '../../provider/api_provider.dart';
+import '../../provider/address_provider.dart';
 import '../app_routes.dart';
 
 class MapScreen extends StatefulWidget {
@@ -20,14 +22,18 @@ class MapScreen extends StatefulWidget {
   final LatLng latLong;
 
   @override
-  _MapScreenState createState() => _MapScreenState();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
   MapType _selectedMapType = MapType.normal;
-  late GoogleMapController _mapController;
   late CameraPosition initialCameraPosition;
+  late CameraPosition currentCameraPosition;
+  bool onCameraMoveStarted = false;
+
   late LatLng _selectedLocation;
+  final Completer<GoogleMapController> _controller =
+      Completer<GoogleMapController>();
 
   @override
   void initState() {
@@ -36,18 +42,19 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     _selectedLocation = widget.latLong;
-    initialCameraPosition = CameraPosition(target: _selectedLocation, zoom: 15);
+    initialCameraPosition = CameraPosition(target: _selectedLocation, zoom: 20);
+    currentCameraPosition=CameraPosition(target: _selectedLocation, zoom: 15);
   }
 
   @override
   Widget build(BuildContext context) {
     final AddressProvider addressProvider =
-    Provider.of<AddressProvider>(context);
+        Provider.of<AddressProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         systemOverlayStyle:
-        const SystemUiOverlayStyle(statusBarColor: Colors.black),
+            const SystemUiOverlayStyle(statusBarColor: Colors.black),
         toolbarHeight: 45,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -68,14 +75,22 @@ class _MapScreenState extends State<MapScreen> {
       body: Stack(
         children: [
           GoogleMap(
+            onCameraMove: (CameraPosition cameraPosition){
+              currentCameraPosition=cameraPosition;
+            },
             padding: EdgeInsets.only(bottom: 20.r),
             mapType: _selectedMapType,
             mapToolbarEnabled: true,
             myLocationEnabled: true,
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
+            onCameraMoveStarted: () {
+              setState(() {
+                onCameraMoveStarted = true;
+              });
+            },
             onMapCreated: (controller) {
-              _mapController = controller;
+              _controller.complete(controller);
             },
             onTap: (LatLng location) {
               setState(() {
@@ -86,12 +101,21 @@ class _MapScreenState extends State<MapScreen> {
               target: _selectedLocation,
               zoom: 15,
             ),
-            markers: <Marker>{
-              Marker(
-                markerId: const MarkerId('selectedLocation'),
-                position: _selectedLocation,
-              ),
+            onCameraIdle: () {
+              context
+                  .read<AddressCallProvider>()
+                  .getAddressByLatLong(latLng: currentCameraPosition.target);
+              setState(() {
+                onCameraMoveStarted=false;
+              });
             },
+          ),
+          Align(
+            child: Icon(
+              Icons.location_pin,
+              color: Colors.red,
+              size: onCameraMoveStarted ? 50 : 32,
+            ),
           ),
           Align(
             alignment: Alignment.topCenter,
@@ -123,11 +147,7 @@ class _MapScreenState extends State<MapScreen> {
             top: 60,
             child: ZoomTapAnimation(
               onTap: () {
-                setState(() {
-                  _selectedLocation = widget.latLong;
-                  initialCameraPosition =
-                      CameraPosition(target: _selectedLocation, zoom: 15);
-                });
+                followMe(cameraPosition: initialCameraPosition);
               },
               child: Container(
                 height: 33.h,
@@ -159,10 +179,10 @@ class _MapScreenState extends State<MapScreen> {
                     color: _selectedMapType == MapType.normal
                         ? Colors.white
                         : _selectedMapType == MapType.hybrid
-                        ? Colors.green
-                        : _selectedMapType == MapType.terrain
-                        ? Colors.blue
-                        : Colors.white),
+                            ? Colors.green
+                            : _selectedMapType == MapType.terrain
+                                ? Colors.blue
+                                : Colors.white),
               ),
               onSelected: (MapType result) {
                 setState(() {
@@ -224,110 +244,6 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
-          // Positioned(
-          //   right: 3,
-          //   top: 135,
-          //   child: PopupMenuButton<MapType>(
-          //     color: Colors.black.withOpacity(0.8),
-          //     icon: Container(
-          //       height: 50.h,
-          //       width: 50.w,
-          //       decoration: BoxDecoration(
-          //           borderRadius: BorderRadius.circular(50.r),
-          //           color: Colors.black.withOpacity(0.8)),
-          //       child: const Icon(Icons.language, color: Colors.white),
-          //     ),
-          //     onSelected: (MapType result) {
-          //       setState(() {});
-          //     },
-          //     itemBuilder: (BuildContext context) => <PopupMenuEntry<MapType>>[
-          //       PopupMenuItem<MapType>(
-          //         onTap: () {
-          //           setState(() {});
-          //         },
-          //         value: MapType.normal,
-          //         child: Row(
-          //           children: [
-          //             Text("UZB",
-          //                 style: TextStyle(
-          //                     color: Colors.white,
-          //                     fontFamily: "Poppins",
-          //                     fontSize: 15.sp)),
-          //             const Spacer(),
-          //             SvgPicture.asset(
-          //               AppImages.uzb,
-          //               width: 30.w,
-          //               height: 30,
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       PopupMenuItem<MapType>(
-          //         onTap: () {
-          //           setState(() {});
-          //         },
-          //         value: MapType.hybrid,
-          //         child: Row(
-          //           children: [
-          //             Text("RUS",
-          //                 style: TextStyle(
-          //                     color: Colors.white,
-          //                     fontFamily: "Poppins",
-          //                     fontSize: 15.sp)),
-          //             const Spacer(),
-          //             SvgPicture.asset(
-          //               AppImages.rus,
-          //               width: 30.w,
-          //               height: 30,
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       PopupMenuItem<MapType>(
-          //         onTap: () {
-          //           setState(() {});
-          //         },
-          //         value: MapType.terrain,
-          //         child: Row(
-          //           children: [
-          //             Text("ENG",
-          //                 style: TextStyle(
-          //                     color: Colors.white,
-          //                     fontFamily: "Poppins",
-          //                     fontSize: 15.sp)),
-          //             const Spacer(),
-          //             SvgPicture.asset(
-          //               AppImages.usa,
-          //               width: 30.w,
-          //               height: 30,
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       PopupMenuItem<MapType>(
-          //         onTap: () {
-          //           setState(() {});
-          //         },
-          //         value: MapType.terrain,
-          //         child: Row(
-          //           children: [
-          //             Text("TURK",
-          //                 style: TextStyle(
-          //                     color: Colors.white,
-          //                     fontFamily: "Poppins",
-          //                     fontSize: 15.sp)),
-          //             const Spacer(),
-          //             SvgPicture.asset(
-          //               AppImages.turk,
-          //               width: 30.w,
-          //               height: 30,
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           const Positioned(top: 135, right: 2, child: AddressKindSelector()),
           const Positioned(top: 175, right: 2, child: AddressLangSelector()),
         ],
@@ -344,6 +260,7 @@ class _MapScreenState extends State<MapScreen> {
                 latitude: _selectedLocation.latitude,
                 longitude: _selectedLocation.longitude,
               ),
+              address: context.read<AddressCallProvider>().scrolledAddressText,
             ),
           );
           ScaffoldMessenger.of(context).showSnackBar(
@@ -359,6 +276,13 @@ class _MapScreenState extends State<MapScreen> {
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Future<void> followMe({required CameraPosition cameraPosition}) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(
+      CameraUpdate.newCameraPosition(cameraPosition),
     );
   }
 }

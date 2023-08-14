@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:google_map/provider/user_provider.dart';
 import '../data/models/user_model.dart';
+import '../local/db/local_database.dart';
 
 class UserLocationsProvider with ChangeNotifier {
   List<UserAddress> addresses = [];

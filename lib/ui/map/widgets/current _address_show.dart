@@ -13,7 +13,7 @@ class CurrentAddressField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
       margin: const EdgeInsets.only(top: 5, left: 5, right: 50),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30.r),
