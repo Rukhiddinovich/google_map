@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,7 +43,9 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     LocationProvider locationProvider =
         Provider.of<LocationProvider>(context, listen: false);
-    addNewMarker(locationProvider.latLong!);
+    if(locationProvider.latLong!=null) {
+      addNewMarker(locationProvider.latLong!);
+    }
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
     super.initState();

@@ -11,7 +11,7 @@ class UserLocationsProvider with ChangeNotifier {
 
   getUserAddresses() async {
     addresses = await LocalDatabase.getAllUserAddresses();
-    print("CURRENT LENGTH:${addresses.length}");
+    debugPrint("CURRENT LENGTH:${addresses.length}");
     notifyListeners();
   }
 
@@ -22,6 +22,10 @@ class UserLocationsProvider with ChangeNotifier {
 
   deleteUserAddress(int id) async {
     await LocalDatabase.deleteUserAddress(id);
+    getUserAddresses();
+  }
+  deleteAllUserAddress() async {
+    await LocalDatabase.deleteAllAddresses();
     getUserAddresses();
   }
 }

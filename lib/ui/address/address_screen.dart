@@ -33,7 +33,7 @@ class AddressListScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              context.read<UserLocationsProvider>().deleteUserAddress(1);
+              context.read<UserLocationsProvider>().deleteAllUserAddress();
             },
             child: Text(
               'Clear',
@@ -66,7 +66,9 @@ class AddressListScreen extends StatelessWidget {
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      context.read<UserLocationsProvider>().deleteUserAddress(index);
+                      context
+                          .read<UserLocationsProvider>()
+                          .deleteUserAddress(address.id ?? 1);
                     },
                   ),
                 );
