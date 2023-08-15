@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_map/data/network/api_service.dart';
 import 'package:google_map/provider/address_call_provider.dart';
 import 'package:google_map/provider/address_provider.dart';
+import 'package:google_map/provider/location_provider.dart';
 import 'package:google_map/provider/user_location_provider.dart';
 import 'package:google_map/ui/app_routes.dart';
 import 'package:google_map/ui/splash/splash_screen.dart';
@@ -14,6 +15,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AddressProvider()),
+        ChangeNotifierProvider(create: (context) => LocationProvider()),
         ChangeNotifierProvider(create: (context) => UserLocationsProvider()),
         ChangeNotifierProvider(
             create: (context) => AddressCallProvider(apiService: ApiService())),

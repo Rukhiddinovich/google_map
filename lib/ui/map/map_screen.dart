@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_map/data/models/user_model.dart';
 import 'package:google_map/provider/address_call_provider.dart';
+import 'package:google_map/provider/user_location_provider.dart';
 import 'package:google_map/ui/map/widgets/address_kind_selector.dart';
 import 'package:google_map/ui/map/widgets/address_lang_selector.dart';
 import 'package:google_map/ui/map/widgets/current%20_address_show.dart';
@@ -12,8 +15,9 @@ import 'package:google_map/utils/icons.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
-import '../../data/models/map/map_model.dart';
 import '../../provider/address_provider.dart';
+import '../../provider/location_provider.dart';
+import '../../utils/utility_functions.dart';
 import '../app_routes.dart';
 
 class MapScreen extends StatefulWidget {
@@ -30,6 +34,7 @@ class _MapScreenState extends State<MapScreen> {
   late CameraPosition initialCameraPosition;
   late CameraPosition currentCameraPosition;
   bool onCameraMoveStarted = false;
+  Set<Marker> markers = {};
 
   late LatLng _selectedLocation;
   final Completer<GoogleMapController> _controller =
@@ -37,13 +42,15 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void initState() {
+    LocationProvider locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
+    addNewMarker(locationProvider.latLong!);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
     super.initState();
-    Provider.of<AddressProvider>(context, listen: false).loadAddresses();
     _selectedLocation = widget.latLong;
     initialCameraPosition = CameraPosition(target: _selectedLocation, zoom: 20);
-    currentCameraPosition=CameraPosition(target: _selectedLocation, zoom: 15);
+    currentCameraPosition = CameraPosition(target: _selectedLocation, zoom: 15);
   }
 
   @override
@@ -75,8 +82,9 @@ class _MapScreenState extends State<MapScreen> {
       body: Stack(
         children: [
           GoogleMap(
-            onCameraMove: (CameraPosition cameraPosition){
-              currentCameraPosition=cameraPosition;
+            markers: context.read<LocationProvider>().markers,
+            onCameraMove: (CameraPosition cameraPosition) {
+              currentCameraPosition = cameraPosition;
             },
             padding: EdgeInsets.only(bottom: 20.r),
             mapType: _selectedMapType,
@@ -106,7 +114,7 @@ class _MapScreenState extends State<MapScreen> {
                   .read<AddressCallProvider>()
                   .getAddressByLatLong(latLng: currentCameraPosition.target);
               setState(() {
-                onCameraMoveStarted=false;
+                onCameraMoveStarted = false;
               });
             },
           ),
@@ -252,16 +260,15 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black.withOpacity(0.8),
         onPressed: () async {
-          Provider.of<AddressProvider>(context, listen: false).addAddress(
-            Address(
-              id: DateTime.now().millisecondsSinceEpoch,
-              name: 'Location',
-              location: Location(
-                latitude: _selectedLocation.latitude,
-                longitude: _selectedLocation.longitude,
-              ),
-              address: context.read<AddressCallProvider>().scrolledAddressText,
-            ),
+          Provider.of<UserLocationsProvider>(context, listen: false)
+              .insertUserAddress(
+            UserAddress(
+                id: DateTime.now().millisecondsSinceEpoch,
+                lat: currentCameraPosition.target.latitude,
+                long: currentCameraPosition.target.longitude,
+                address:
+                    context.read<AddressCallProvider>().scrolledAddressText,
+                created: DateTime.now().toString()),
           );
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -285,4 +292,20 @@ class _MapScreenState extends State<MapScreen> {
       CameraUpdate.newCameraPosition(cameraPosition),
     );
   }
+
+  addNewMarker(LatLng latLng) async {
+    Uint8List uint8list =
+        await getBytesFromAsset("assets/courier.png", 150);
+    markers.add(Marker(
+        markerId: MarkerId(
+          DateTime.now().toString(),
+        ),
+        position: latLng,
+        icon: BitmapDescriptor.fromBytes(uint8list),
+        //BitmapDescriptor.defaultMarker,
+        infoWindow: const InfoWindow(
+            title: "Samarqand", snippet: "Falonchi Ko'chasi 45-uy ")));
+    setState(() {});
+  }
+
 }

@@ -35,6 +35,7 @@ class AddressCallProvider with ChangeNotifier {
     lang = newLang;
   }
 
+
   bool canSaveAddress() {
     if (scrolledAddressText.isEmpty) return false;
     if (scrolledAddressText == "Undefined Area") return false;

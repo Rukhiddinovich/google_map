@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_map/data/models/map/map_model.dart';
+import 'package:google_map/data/models/user_model.dart';
+import 'package:google_map/provider/user_location_provider.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import '../../provider/address_provider.dart';
 import '../../utils/icons.dart';
 
 class AddressListScreen extends StatelessWidget {
@@ -13,8 +13,8 @@ class AddressListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final addressProvider = Provider.of<AddressProvider>(context);
-    List<Address> userAddress = addressProvider.addresses;
+    List<UserAddress> userAddress =
+        Provider.of<UserLocationsProvider>(context).addresses;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -33,7 +33,7 @@ class AddressListScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              addressProvider.deleteAllAddresses();
+              context.read<UserLocationsProvider>().deleteUserAddress(1);
             },
             child: Text(
               'Clear',
@@ -51,24 +51,14 @@ class AddressListScreen extends StatelessWidget {
                 final address = userAddress[index];
                 return ListTile(
                   onTap: () {},
-                  title: Row(
-                    children: [
-                      Text(
-                        address.address,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20.sp,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
                   subtitle: Text(
-                    address.name,
+                    address.address,
                     style: TextStyle(
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         fontSize: 15.sp,
-                        fontFamily: "Poppins",
                         color: Colors.black),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 4,
                   ),
                   trailing: IconButton(
                     icon: const Icon(
@@ -76,7 +66,7 @@ class AddressListScreen extends StatelessWidget {
                       color: Colors.red,
                     ),
                     onPressed: () {
-                      addressProvider.deleteAddress(index);
+                      context.read<UserLocationsProvider>().deleteUserAddress(index);
                     },
                   ),
                 );

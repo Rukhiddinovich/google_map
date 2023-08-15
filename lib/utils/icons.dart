@@ -15,6 +15,7 @@ class AppImages {
   static const String rus = "assets/svg/rus.svg";
   static const String usa = "assets/svg/usa.svg";
   static const String turk = "assets/svg/turk.svg";
+  static const String courier = "assets/svg/courier.svg";
 
   // lottie
   static const String clean = "assets/lotties/clean.json";
