@@ -9,6 +9,7 @@ class LocationProvider with ChangeNotifier {
     _getLocation();
   }
 
+  int count = 1;
   LatLng? latLong;
 
   Set<Marker> markers = {};
@@ -51,7 +52,10 @@ class LocationProvider with ChangeNotifier {
     location.enableBackgroundMode(enable: true);
 
     location.onLocationChanged.listen((LocationData newLocation) async {
-      Uint8List uint8list = await getBytesFromAsset("assets/courier.png", 150);
+      Uint8List uint8list = count == 1
+          ? await getBytesFromAsset("assets/courier.png", 150)
+          : await getBytesFromAsset("assets/dot.png", 70);
+      count++;
       markers.add(Marker(
           markerId: MarkerId(
             DateTime.now().toString(),
