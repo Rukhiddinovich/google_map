@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_map/data/models/user_model.dart';
 import 'package:google_map/provider/address_call_provider.dart';
 import 'package:google_map/provider/user_location_provider.dart';
+import 'package:google_map/ui/address/address_screen.dart';
 import 'package:google_map/ui/map/widgets/address_kind_selector.dart';
 import 'package:google_map/ui/map/widgets/address_lang_selector.dart';
 import 'package:google_map/ui/map/widgets/current%20_address_show.dart';
@@ -27,22 +28,21 @@ class MapScreen extends StatefulWidget {
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
-
+late CameraPosition currentCameraPosition;
 class _MapScreenState extends State<MapScreen> {
   MapType _selectedMapType = MapType.normal;
   late CameraPosition initialCameraPosition;
-  late CameraPosition currentCameraPosition;
   bool onCameraMoveStarted = false;
   Set<Marker> markers = {};
 
   late LatLng _selectedLocation;
   final Completer<GoogleMapController> _controller =
-  Completer<GoogleMapController>();
+      Completer<GoogleMapController>();
 
   @override
   void initState() {
     LocationProvider locationProvider =
-    Provider.of<LocationProvider>(context, listen: false);
+        Provider.of<LocationProvider>(context, listen: false);
     if (locationProvider.latLong != null) {
       addNewMarker(locationProvider.latLong!);
     }
@@ -57,12 +57,12 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final AddressProvider addressProvider =
-    Provider.of<AddressProvider>(context);
+        Provider.of<AddressProvider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         systemOverlayStyle:
-        const SystemUiOverlayStyle(statusBarColor: Colors.black),
+            const SystemUiOverlayStyle(statusBarColor: Colors.black),
         toolbarHeight: 45,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -83,9 +83,7 @@ class _MapScreenState extends State<MapScreen> {
       body: Stack(
         children: [
           GoogleMap(
-            markers: context
-                .read<LocationProvider>()
-                .markers,
+            markers: context.read<LocationProvider>().markers,
             onCameraMove: (CameraPosition cameraPosition) {
               currentCameraPosition = cameraPosition;
             },
@@ -137,7 +135,11 @@ class _MapScreenState extends State<MapScreen> {
             top: 20,
             child: ZoomTapAnimation(
               onTap: () {
-                Navigator.pushNamed(context, RouteNames.addressScreen);
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return UserAddressScreen(onTap: (){
+                    followMe(cameraPosition: currentCameraPosition);
+                  },);
+                }));
               },
               child: Container(
                 height: 33.h,
@@ -190,18 +192,17 @@ class _MapScreenState extends State<MapScreen> {
                     color: _selectedMapType == MapType.normal
                         ? Colors.white
                         : _selectedMapType == MapType.hybrid
-                        ? Colors.green
-                        : _selectedMapType == MapType.terrain
-                        ? Colors.blue
-                        : Colors.white),
+                            ? Colors.green
+                            : _selectedMapType == MapType.terrain
+                                ? Colors.blue
+                                : Colors.white),
               ),
               onSelected: (MapType result) {
                 setState(() {
                   _selectedMapType = result;
                 });
               },
-              itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry<MapType>>[
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<MapType>>[
                 PopupMenuItem<MapType>(
                   onTap: () {
                     setState(() {});
@@ -267,15 +268,11 @@ class _MapScreenState extends State<MapScreen> {
           Provider.of<UserLocationsProvider>(context, listen: false)
               .insertUserAddress(
             UserAddress(
-                id: DateTime
-                    .now()
-                    .millisecondsSinceEpoch,
+                id: DateTime.now().millisecondsSinceEpoch,
                 lat: currentCameraPosition.target.latitude,
                 long: currentCameraPosition.target.longitude,
                 address:
-                context
-                    .read<AddressCallProvider>()
-                    .scrolledAddressText,
+                    context.read<AddressCallProvider>().scrolledAddressText,
                 created: DateTime.now().toString()),
           );
           ScaffoldMessenger.of(context).showSnackBar(
@@ -302,7 +299,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   addNewMarker(LatLng latLng) async {
-      Uint8List uint8list = await getBytesFromAsset("assets/dot.png", 150);
+    Uint8List uint8list = await getBytesFromAsset("assets/dot.png", 150);
     markers.add(Marker(
         markerId: MarkerId(
           DateTime.now().toString(),
